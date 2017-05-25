@@ -9,7 +9,6 @@ if (isset($_POST["postCheckLogin"])) {
     $password = $_POST["password"];
     session_start();
     if (password_verify($password, $user->getPassword()) && $user->getName() == $name) {
-
         $_SESSION["user"] = serialize($user);
         header("Location:index.php");
     } else {

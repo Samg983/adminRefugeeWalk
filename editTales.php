@@ -1,18 +1,19 @@
 <?php
 include_once 'check_login.php';
+
+$id = $_GET["id"];
+
 ?>
 <!doctype html>
 <html lang="nl">
 
     <?php
     require_once './Head.php';
-    $src1= $_POST['source1'];
-    echo count($src1);
     ?>
 
     <body>
         <?php require_once 'nav.php'; ?>
-      
+
 
 
         <header class="headerPic">
@@ -23,18 +24,16 @@ include_once 'check_login.php';
 
 
             <div class="row" style="margin-top:1em">
-                <h4 class="col s12 green-border">Tales</h4>
+                <h4 id="editTaleId" class="col s12 green-border"><?php echo $id; ?></h4>
             </div>
 
-            <div id="tales" class="row">
+            <div class="row">
+
                 
             </div>
 
 
-
         </main>
-
-
         <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
         <script>
             // Initialize Firebase
@@ -48,7 +47,7 @@ include_once 'check_login.php';
             };
             firebase.initializeApp(config);
         </script>
-        <script src="./js/tales.js"></script>
-<?php require_once './Footer.php'; ?>
+        <script src="./js/editTales.js"></script>
+        <?php require_once './Footer.php'; ?>
     </body>
 </html>

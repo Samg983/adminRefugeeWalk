@@ -21,9 +21,9 @@ $(document).ready(function () {
 
     readAllAnnotationsNl();
 
-    
 
-    
+
+
     $("#submit").click(function () {
         //alert(annotationNlCount);
         var titel = $("#title").val();
@@ -221,22 +221,36 @@ function initMap() {
         $('#addMarkerPopUp').popup('toggle');
         lat = e.latLng.lat();
         lon = e.latLng.lng();
-        placeMarker(e.latLng, "eat", map);
     });
 }
 
-function placeMarker(position, categorie, title, map) {
+function placeMarker(position, categorie, map, id, beschrijving, titel) {
     var marker = new google.maps.Marker({
         draggable: true,
         position: position,
         map: map,
         animation: google.maps.Animation.DROP,
-        icon: icons[categorie].icon
+        icon: icons[categorie].icon,
+        id: id,
+        beschrijving: beschrijving,
+        categorie: categorie,
+        titel: titel
     });
     marker.addListener('click', toggleBounce);
     google.maps.event.addListener(marker, 'dragend', function (e) {
+        setMapOnAll(null);
         console.log(e.latLng.lat());
-        console.log(marker.position);
+        console.log(marker.id);
+        console.log(marker.titel);
+        var annotationRef = database.ref("nl/annotations/" + id);
+
+        annotationRef.update({
+            beschrijving: marker.beschrijving,
+            categorie: marker.categorie,
+            lat: e.latLng.lat(),
+            lon: e.latLng.lng(),
+            titel: marker.titel
+        });
     });
     map.panTo(position);
 }
@@ -278,9 +292,17 @@ function readAllAnnotationsNl() {
             var beschrijving = allAnnotations[k].beschrijving;
 
             var myLatlng = new google.maps.LatLng(lat, lon);
-            placeMarker(myLatlng, categorie, title, map);
+            placeMarker(myLatlng, categorie, map, k, beschrijving, titel);
         }
     });
 }
 
+// Sets the map on all markers in the array.
+function setMapOnAll(map) {
+    for (var i = 0; i < allAnnotationsKeys.length; i++) {
+        allAnnotationsKeys = Object.keys(allAnnotations);
+        var k = allAnnotationsKeys[i];
+        allAnnotationsKeys[k].setMap(map);
+    }
+}
 

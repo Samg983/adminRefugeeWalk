@@ -126,9 +126,7 @@ ul.dropdown-content.select-dropdown li span {
 }
 
 #mapIcon {
-    position: absolute;
-    top: 5%;
-    right: 5%;
+    
 }
 
 .card-title{
@@ -187,6 +185,14 @@ ul.dropdown-content.select-dropdown li span {
     border-bottom: 1px solid #000;
     box-shadow: 0 1px 0 0 #000;
 }
+
+#addMarkerPopUp {
+    display: none;
+    padding: 2%;
+    background-color: white;
+}
+
+
 
 @media only screen and (max-width: 992px) {
     header,

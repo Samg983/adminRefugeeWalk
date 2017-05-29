@@ -13,10 +13,12 @@ include_once 'check_login.php';
         <main>
             <div class="fixed-action-btn">
                 <a id="mapIcon" class="btn-floating btn-large teal">
-                    <i class="large material-icons">mode_edit</i>
+                    <i class="large material-icons">add</i>
                 </a>
                 <ul>
-                    <li><a class="btn-floating red"><i class="material-icons">delete</i></a></li>
+                    <li id="add_location"><a class="btn-floating white"><i id="addIcon" class="material-icons teal-text">add_location</i></a></li>
+                    <li id="draw_route"><a class="btn-floating white"><i id="drawRouteIcon" class="material-icons teal-text">mode_edit</i></a></li>
+                    <li id="delete"><a class="btn-floating white"><i id="deleteIcon" class="material-icons teal-text">delete</i></a></li>
                 </ul>
             </div>
             <div id="map">
@@ -26,11 +28,11 @@ include_once 'check_login.php';
 
             <div id="addMarkerPopUp" style="width:30%">
 
-                <form class="s12" action="map.php">
+                <form class="s12" action="map.php" enctype="multipart/form-data">
                     <div class="row">
                         <div class="input-field col s12">
                             <select class="icons" name="categorie" id="categorie">
-                                <option value="" disabled selected>Kies een categorie</option>
+                                <option value="" disabled selected>Kies een categorie*</option>
                                 <option value="eat" data-icon="img/eat.png" class="left circle">Eat</option>
                                 <option value="rock" data-icon="img/rock.png" class="left circle">Rock</option>
                                 <option value="tales" data-icon="img/tales.png" class="left circle">Tales</option>
@@ -40,18 +42,30 @@ include_once 'check_login.php';
                     <div class="row">
                         <div class="input-field col s12">
                             <input placeholder="" id="title" type="text" class="validate" name="title">
-                            <label for="title">Titel</label>
+                            <label for="title">Titel*</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
                             <textarea id="beschrijving" class="materialize-textarea" placeholder="" name="description"></textarea>
-                            <label for="beschrijving">Beschrijving</label>
+                            <label for="beschrijving">Beschrijving*</label>
                         </div>
                     </div>
-                    <button id="submit" class="btn waves-effect waves-light full-width" type="submit">Submit
+                    <div class="file-field input-field col s12 m6">
+                        <div class="btn">
+                            <span>Foto*</span>
+                            <input id="imgButton" type="file" name="imgTale" >
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text" name="imgTale2" value="">
+                        </div>
+                    </div>
+                    <a id="submit" class="btn waves-effect waves-light full-width" type="submit">Submit
                         <i class="material-icons right">send</i>
-                    </button>
+                    </a>
+                   <!--<button id="submit" class="btn waves-effect waves-light full-width" type="submit">Submit
+                        <i class="material-icons right">send</i>
+                    </button>-->
                 </form>
 
 

@@ -3,7 +3,6 @@
 var map;
 var database = firebase.database();
 var storage = firebase.app().storage();
-var annotationNlCount;
 var iconBase = 'https://www.samgoeman.com/img/';
 var lat, lon;
 var file;
@@ -16,7 +15,10 @@ var route;
 
 var path;
 
-var polylines = [];
+var routeMarkers = [];
+
+var markers = [];
+
 
 var icons = {
     tales: {
@@ -33,6 +35,7 @@ var icons = {
 $(document).ready(function () {
     route = new google.maps.MVCArray();
 
+    $('.tabs').tabs();
 
     initMap();
 
@@ -108,18 +111,26 @@ $(document).ready(function () {
 
     $("#submit").click(function (e) {
         //alert(annotationNlCount);
-        var titel = $("#title").val();
-        var beschrijving = $("#beschrijving").val();
         var categorie = $("#categorie").val();
 
-        var storageRef =  storage.ref("tales/" + file.name);
-        var task = storageRef.put(file);
+        var titelNl = $("#title").val();
+        var beschrijvingNl = $("#beschrijving").val();
 
-        writeAnnotationToFirebase(categorie, lat, lon, titel, beschrijving);
+        var titelEng = $("#titleEng").val();
+        var beschrijvingEng = $("#beschrijvingEng").val();
 
-        $('#addMarkerPopUp').popup({
-            closeelement: true
+        var imgPath = "";
+
+        var storageRef =  storage.ref("annotation/" + file.name);
+        var task = storageRef.put(file).then(function () {
+            storageRef.getDownloadURL().then(function (url) {
+                imgPath = url;
+                writeAnnotationToFirebaseNl(categorie, lat, lon, titelNl, beschrijvingNl, imgPath);
+                writeAnnotationToFirebaseEng(categorie, lat, lon, titelEng, beschrijvingEng, imgPath);
+            });
         });
+
+        clearForm();
 
     });
 });
@@ -310,7 +321,9 @@ function initMap() {
 
     map.addListener('click', function (e) {
         if (addBoolean) {
+            clearForm();
             $('#addMarkerPopUp').popup('show');
+
             lat = e.latLng.lat();
             lon = e.latLng.lng();
         }
@@ -323,17 +336,26 @@ function initMap() {
     });
 }
 
-function placeMarker(position, categorie, map, id, beschrijving, titel) {
+function placeMarker(position, categorie, map, idNL, beschrijvingNL, titelNL, idENG, beschrijvingENG, titelENG) {
     var marker = new google.maps.Marker({
         draggable: true,
         position: position,
         map: map,
-        animation: google.maps.Animation.DROP,
         icon: icons[categorie].icon,
-        id: id,
-        beschrijving: beschrijving,
         categorie: categorie,
-        titel: titel
+        idNL: idNL,
+        beschrijvingNL: beschrijvingNL,
+        titelNL: titelNL,
+        idENG: idENG,
+        beschrijvingENG: beschrijvingENG,
+        titelENG: titelENG
+    });
+
+    markers.push(marker);
+
+    marker.addListener("click", function () {
+        $('#addMarkerPopUp').popup('show');
+        getAnnotationById(marker.idNL, marker.idENG);
     });
 
     google.maps.event.addListener(marker, 'dragend', function (e) {
@@ -346,45 +368,73 @@ function placeMarker(position, categorie, map, id, beschrijving, titel) {
             lon: e.latLng.lng(),
             titel: marker.titel
         });
+        clearMarkers();
+        markers = [];
+        readAllAnnotationsNl();
     });
-    map.panTo(position);
 }
 
 
 
-function writeAnnotationToFirebase(categorie, lat, lon, titel, beschrijving) {
+function writeAnnotationToFirebaseNl(categorie, lat, lon, titel, beschrijving, imgPath) {
     database.ref('nl/annotations/').push({
         categorie: categorie,
         lat: lat,
         lon: lon,
         titel: titel,
-        beschrijving: beschrijving
+        beschrijving: beschrijving,
+        imgPath: imgPath
     });
 
-    $('#addMarkerPopUp').popup('toggle');
+
 
 
 }
 
-var allAnnotations;
+function writeAnnotationToFirebaseEng(categorie, lat, lon, titel, beschrijving, imgPath) {
+    database.ref('eng/annotations/').push({
+        categorie: categorie,
+        lat: lat,
+        lon: lon,
+        titel: titel,
+        beschrijving: beschrijving,
+        imgPath: imgPath
+    });
+
+
+
+}
+
 function readAllAnnotationsNl() {
+
     var annotationsRefNl = firebase.database().ref('nl/annotations');
     annotationsRefNl.on('value', function (snapshot) {
-        allAnnotations = snapshot.val();
-        allAnnotationsKeys = Object.keys(allAnnotations);
-        annotationNlCount = allAnnotationsKeys.length;
-        for (var i = 0; i < allAnnotationsKeys.length; i++) {
-            var k = allAnnotationsKeys[i];
+        var allAnnotationsNL = snapshot.val();
+        var allAnnotationsKeysNL = Object.keys(allAnnotationsNL);
 
-            var categorie = allAnnotations[k].categorie;
-            var lat = allAnnotations[k].lat;
-            var lon = allAnnotations[k].lon;
-            var titel = allAnnotations[k].titel;
-            var beschrijving = allAnnotations[k].beschrijving;
 
-            var myLatlng = new google.maps.LatLng(lat, lon);
-            placeMarker(myLatlng, categorie, map, k, beschrijving, titel);
-        }
+        var annotationsRefEng = firebase.database().ref('eng/annotations');
+        annotationsRefEng.on('value', function (snapshot) {
+            var allAnnotationsENG = snapshot.val();
+            var allAnnotationsKeysENG = Object.keys(allAnnotationsENG);
+            for (var i = 0; i < allAnnotationsKeysNL.length; i++) {
+                var k = allAnnotationsKeysNL[i];
+                var p = allAnnotationsKeysENG[i];
+                var categorie = allAnnotationsNL[k].categorie;
+                var lat = allAnnotationsNL[k].lat;
+                var lon = allAnnotationsNL[k].lon;
+                var titelNL = allAnnotationsNL[k].titel;
+                var beschrijvingNL = allAnnotationsNL[k].beschrijving;
+
+                //console.log(p);
+                var titelENG = allAnnotationsENG[p].titel;
+                var beschrijvingENG = allAnnotationsENG[p].beschrijving;
+
+                var myLatlng = new google.maps.LatLng(lat, lon);
+                placeMarker(myLatlng, categorie, map, k, beschrijvingNL, titelNL, p, titelENG, beschrijvingENG);
+            }
+        });
+
     });
 }
 
@@ -402,42 +452,27 @@ function drawRoute() {
             var lat = allPoints[k].lat;
             var lon = allPoints[k].lon;
 
+
+            placeRouteMarker(k, lat, lon);
+
             route.push(new google.maps.LatLng(lat, lon));
 
         }
 
-        google.maps.event.addListener(route, "insert_at", function (vertex) {
-            //console.log(vertex);
-        });
 
-        google.maps.event.addListener(route, "set_at", function (vertex) {
-            console.log(vertex);
-        });
-
-
-        updateCoords(route);
 
         var path = new google.maps.Polyline({
             path: route,
             geodesic: true,
-            editable: true,
-            strokeColor: "#00b6b2",
+            editable: false,
+            strokeColor: "#f2552a",
             strokeOpacity: 1.0,
             strokeWeight: 2,
             map: map
         });
 
-        path.addListener('click', function (polyMouseEvent) {
-            if (deleteBoolean) {
-                for (var i = 0; i < polylines.length; i++) {
-                    if (google.maps.geometry.poly.isLocationOnEdge(polyMouseEvent.latLng, polylines[i], 0.0001)) {
-                        route.removeAt(i);
-                        removePointFromFirebase(polyMouseEvent.latLng);
-                    }
-                }
-            }
-            /**/
-        });
+
+
 
     });
 }
@@ -468,44 +503,98 @@ function setDeleteToNormal() {
     $("#deleteIcon").html("delete");
 }
 
-function updateCoords(path) {
-    path.forEach(function (element, index) {
-        if (index > 0) {
-            polyline = new google.maps.Polyline({
-                path: [
-                    point,
-                    element
-                ],
-                map: map,
-                visible: false,
-                geodesic: true
-            });
 
-            polylines.push(polyline);
+
+
+function placeRouteMarker(id, lat, lon) {
+    var marker = new google.maps.Marker({
+        draggable: true,
+        position: new google.maps.LatLng(lat, lon),
+        map: map,
+        icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 5,
+            fillColor: "#FFF",
+            fillOpacity: 1,
+            strokeColor: '#f2552a',
+            strokeWeight: 2
+
+        },
+        id: id
+    });
+
+
+    marker.addListener('click', function (e) {
+        if (deleteBoolean) {
+            var id = marker.id;
+            var markerRef = firebase.database().ref("route/").child(id);
+            markerRef.remove();
+            clearRouteMarkers();
+            routeMarkers = [];
+            drawRoute();
         }
-        point = element;
+    });
+
+    routeMarkers.push(marker);
+
+    google.maps.event.addListener(marker, 'dragend', function (e) {
+        var routeRef = database.ref("route/" + id);
+
+        routeRef.update({
+            lat: e.latLng.lat(),
+            lon: e.latLng.lng()
+        });
+        clearRouteMarkers();
+        routeMarkers = [];
+        drawRoute();
+
     });
 }
 
-function removePointFromFirebase(latLng) {
-    console.log(latLng.lat());
-    var routeRef = firebase.database().ref('route/');
-    routeRef.on('value', function (snapshot) {
-        var allPoints = snapshot.val();
-        var allPointsKeys = Object.keys(allPoints);
-        
-        for (var i = 0; i < allPointsKeys.length; i++) {
-            var k = allPointsKeys[i];
+function clearRouteMarkers() {
+    setRouteMapOnAll(null);
+}
 
-            var lat = allPoints[k].lat;
-            var lon = allPoints[k].lon;
+function setRouteMapOnAll(map) {
+    for (var i = 0; i < routeMarkers.length; i++) {
+        routeMarkers[i].setMap(map);
+    }
+}
 
-            if(latLng.lat() == lat && latLng.lng() == lon){
-                firebase.database().ref("route").child(k).remove();
-            }
-            
+function clearMarkers() {
+    setMapOnAll(null);
+}
 
-        }
+function setMapOnAll(map) {
+    for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(map);
+    }
+}
+
+function clearForm() {
+    $("#myForm")[0].reset();
+    $("#categorie option[value='tales']").attr("selected", "selected");
+
+}
+
+
+function getAnnotationById(idNL, idENG) {
+
+    var annotationRefNl = firebase.database().ref("nl/annotations/").child(idNL);
+    annotationRefNl.on('value', function (snapshot) {
+        var annotationById = snapshot.val();
+
+
+        $("#title").val(annotationById.titel);
+        $("#beschrijving").val(annotationById.beschrijving);
+
+    });
+
+    var annotationRefEng = firebase.database().ref("eng/annotations/").child(idENG);
+    annotationRefEng.on('value', function (snapshot) {
+        var annotationById = snapshot.val();
+        $("#titleEng").val(annotationById.titel);
+        $("#beschrijvingEng").val(annotationById.beschrijving);
     });
 }
 

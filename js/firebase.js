@@ -119,4 +119,5 @@ function uploadPhoto(name, file) {
     var imgRef = firebase.storage().ref('images/').child(name);
     imgRef.put(file);
 }
+
        

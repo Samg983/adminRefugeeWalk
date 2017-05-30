@@ -28,14 +28,14 @@ include_once 'check_login.php';
 
             <div id="addMarkerPopUp" style="width:30%">
                 <form id="myForm" class="s12" action="map.php" enctype="multipart/form-data">
-                    <ul class="tabs">
-                        <li class="tab col s6"><a class="teal-text active" href="#nl">Nederlands</a></li>
+                    <ul class="tabs center">
+                        <li class="tab col s6"><a class="active teal-text" href="#nl">Nederlands</a></li>
                         <li class="tab col s6"><a class="teal-text" href="#eng">Engels</a></li>
                     </ul>
 
                     <div class="input-field col s12">
-                        <select class="icons" id="categorie">
-                            <option id="nul" value="nul" disabled>Choose a category*</option>
+                        <select class="icons browser-default" id="categorie">
+                            <option id="nul" value="nul" disabled selected>Kies een categorie*</option>
                             <option id="eat" value="eat" data-icon="img/eat.png" class="left circle" >Eat</option>
                             <option id="rock" value="rock" data-icon="img/rock.png" class="left circle">Rock</option>
                             <option id="tales" value="tales" data-icon="img/tales.png" class="left circle">Tales</option>
@@ -92,18 +92,31 @@ include_once 'check_login.php';
 
 
                     </div>
-                    <div class="file-field input-field col s12 m6">
-                        <div class="btn">
+                    <div class="file-field input-field row ">
+                        <div class="btn col s12">
                             <span>Foto*</span>
-                            <input id="imgButton" type="file" name="imgAnnotation" >
+                            <input id="imgButton"type="file" name="imgAnnotation" >
                         </div>
                         <div class="file-path-wrapper">
-                            <input class="file-path validate" type="text" name="imgAnnotation2" value="">
+                            <input id="file-path" class="file-path validate" type="text" name="imgAnnotation2" value="">
                         </div>
                     </div>
-                    <a id="submit" class="btn waves-effect waves-light full-width addMarkerPopUp_close" type="submit">Submit
-                        <i class="material-icons right">send</i>
-                    </a>
+                    <div class="s12">
+                        <img class="imgAnnotation responsive-img" src="">
+                    </div>
+
+                    
+                    <div class="row">
+                        <div class="center">
+
+                            <a class="btn waves-effect waves-light s6 red addMarkerPopUp_close" >Cancel
+                                <i class="material-icons left">delete</i>
+                            </a>
+                            <a id="submit" class="btn waves-effect waves-light s6 addMarkerPopUp_close disabled" type="submit">Submit
+                                <i class="material-icons right">send</i>
+                            </a>
+                        </div>
+                    </div>
                 </form>
             </div>
 

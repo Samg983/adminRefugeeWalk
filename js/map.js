@@ -10,6 +10,7 @@ var file;
 var addBoolean = false;
 var drawBoolean = false;
 var deleteBoolean = false;
+var editAnnotationBoolean = false;
 
 var route;
 
@@ -19,6 +20,7 @@ var routeMarkers = [];
 
 var markers = [];
 
+var toEditId, toEditIdENG;
 
 var icons = {
     tales: {
@@ -54,6 +56,12 @@ $(document).ready(function () {
             if (deleteBoolean) {
                 setDeleteToNormal();
             }
+        }
+
+        if (checkFields()) {
+            $("#submit").removeClass("disabled");
+        } else {
+            $("#submit").addClass("disabled");
         }
     });
     $("#add_location").click(function () {
@@ -102,7 +110,6 @@ $(document).ready(function () {
     });
 
 
-
     var imgButton = $("#imgButton");
 
     imgButton.change(function (e) {
@@ -110,34 +117,73 @@ $(document).ready(function () {
     });
 
     $("#submit").click(function (e) {
-        //alert(annotationNlCount);
-        var categorie = $("#categorie").val();
+        if (checkFields()) {
+            if (editAnnotationBoolean) {
+                var imgPath = "";
 
-        var titelNl = $("#title").val();
-        var beschrijvingNl = $("#beschrijving").val();
+                var categorie = $("#categorie").val();
 
-        var titelEng = $("#titleEng").val();
-        var beschrijvingEng = $("#beschrijvingEng").val();
+                var titelNl = $("#title").val();
+                var beschrijvingNl = $("#beschrijving").val();
 
-        var imgPath = "";
+                var titelEng = $("#titleEng").val();
+                var beschrijvingEng = $("#beschrijvingEng").val();
 
-        var storageRef =  storage.ref("annotation/" + file.name);
-        var task = storageRef.put(file).then(function () {
-            storageRef.getDownloadURL().then(function (url) {
-                imgPath = url;
-                writeAnnotationToFirebaseNl(categorie, lat, lon, titelNl, beschrijvingNl, imgPath);
-                writeAnnotationToFirebaseEng(categorie, lat, lon, titelEng, beschrijvingEng, imgPath);
-            });
-        });
+                console.log(categorie);
 
-        clearForm();
+                if (checkWebAddress($("#file-path").val())) {
+                    imgPath = $("#file-path").val();
+                    editAnnotationToFirebaseNl(toEditIdNl, categorie, titelNl, beschrijvingNl, imgPath);
+                    editAnnotationToFirebaseENG(toEditIdENG, categorie, titelEng, beschrijvingEng, imgPath);
+                    clearMarkers();
+                    markers = [];
+                    readAllAnnotationsNl();
+                } else {
+                    var storageRef =  storage.ref("annotation/" + file.name);
+                    var task = storageRef.put(file).then(function () {
+                        storageRef.getDownloadURL().then(function (url) {
+                            imgPath = url;
+                            
+                            editAnnotationToFirebaseNl(toEditIdNl, categorie,titelNl, beschrijvingNl, imgPath);
+                            editAnnotationToFirebaseENG(toEditIdENG,categorie, titelEng, beschrijvingEng, imgPath);
+                            clearMarkers();
+                            markers = [];
+                            readAllAnnotationsNl();
+                        });
+                    });
+                }
+
+                clearForm();
+            } else {
+                var categorie = $("#categorie").val();
+
+                var titelNl = $("#title").val();
+                var beschrijvingNl = $("#beschrijving").val();
+
+                var titelEng = $("#titleEng").val();
+                var beschrijvingEng = $("#beschrijvingEng").val();
+
+                var imgPath = "";
+
+                var storageRef =  storage.ref("annotation/" + file.name);
+                var task = storageRef.put(file).then(function () {
+                    storageRef.getDownloadURL().then(function (url) {
+                        imgPath = url;
+                        writeAnnotationToFirebaseNl(categorie, lat, lon, titelNl, beschrijvingNl, imgPath);
+                        writeAnnotationToFirebaseEng(categorie, lat, lon, titelEng, beschrijvingEng, imgPath);
+                    });
+                });
+                clearForm();
+            }
+        } else {
+
+        }
 
     });
 });
 
 
 function initMap() {
-    var uluru = {lat: -25.363, lng: 131.044};
     var styledMapType = new google.maps.StyledMapType([
         {
             "elementType": "geometry",
@@ -355,18 +401,33 @@ function placeMarker(position, categorie, map, idNL, beschrijvingNL, titelNL, id
 
     marker.addListener("click", function () {
         $('#addMarkerPopUp').popup('show');
+        editAnnotationBoolean = true;
+        toEditIdNl = idNL;
+        toEditIdENG = idENG;
+
+        $("#submit").removeClass("disabled");
         getAnnotationById(marker.idNL, marker.idENG);
     });
 
     google.maps.event.addListener(marker, 'dragend', function (e) {
-        var annotationRef = database.ref("nl/annotations/" + id);
+        var annotationRefNL = database.ref("nl/annotations/" + idNL);
 
-        annotationRef.update({
-            beschrijving: marker.beschrijving,
+        annotationRefNL.update({
+            beschrijving: marker.beschrijvingNL,
             categorie: marker.categorie,
             lat: e.latLng.lat(),
             lon: e.latLng.lng(),
-            titel: marker.titel
+            titel: marker.titelNL
+        });
+
+        var annotationRefEN = database.ref("eng/annotations/" + idENG);
+
+        annotationRefEN.update({
+            beschrijving: marker.beschrijvingENG,
+            categorie: marker.categorie,
+            lat: e.latLng.lat(),
+            lon: e.latLng.lng(),
+            titel: marker.titelENG
         });
         clearMarkers();
         markers = [];
@@ -385,10 +446,6 @@ function writeAnnotationToFirebaseNl(categorie, lat, lon, titel, beschrijving, i
         beschrijving: beschrijving,
         imgPath: imgPath
     });
-
-
-
-
 }
 
 function writeAnnotationToFirebaseEng(categorie, lat, lon, titel, beschrijving, imgPath) {
@@ -400,9 +457,6 @@ function writeAnnotationToFirebaseEng(categorie, lat, lon, titel, beschrijving, 
         beschrijving: beschrijving,
         imgPath: imgPath
     });
-
-
-
 }
 
 function readAllAnnotationsNl() {
@@ -459,8 +513,6 @@ function drawRoute() {
 
         }
 
-
-
         var path = new google.maps.Polyline({
             path: route,
             geodesic: true,
@@ -470,10 +522,6 @@ function drawRoute() {
             strokeWeight: 2,
             map: map
         });
-
-
-
-
     });
 }
 
@@ -573,7 +621,10 @@ function setMapOnAll(map) {
 
 function clearForm() {
     $("#myForm")[0].reset();
-    $("#categorie option[value='tales']").attr("selected", "selected");
+    $("#categorie").val("nul");
+    $("#submit").addClass("disabled");
+    $(".imgAnnotation").attr("src", "");
+    editAnnotationBoolean = false;
 
 }
 
@@ -583,10 +634,13 @@ function getAnnotationById(idNL, idENG) {
     var annotationRefNl = firebase.database().ref("nl/annotations/").child(idNL);
     annotationRefNl.on('value', function (snapshot) {
         var annotationById = snapshot.val();
-
-
+        $("#categorie").val(annotationById.categorie);
+        $(".imgAnnotation").attr("src", annotationById.imgPath);
+        $("#file-path").val(annotationById.imgPath);
         $("#title").val(annotationById.titel);
         $("#beschrijving").val(annotationById.beschrijving);
+
+
 
     });
 
@@ -596,5 +650,61 @@ function getAnnotationById(idNL, idENG) {
         $("#titleEng").val(annotationById.titel);
         $("#beschrijvingEng").val(annotationById.beschrijving);
     });
+}
+
+function checkFields() {
+    var resultaat = false;
+
+    var categorie = $("#categorie").val();
+
+    var titelNl = $("#title").val();
+    var beschrijvingNl = $("#beschrijving").val();
+
+    var titelEng = $("#titleEng").val();
+    var beschrijvingEng = $("#beschrijvingEng").val();
+
+    var imgPath = $("#file-path").val();
+
+    if (!(categorie == "nul" || titelNl.length == 0 || beschrijvingNl.length == 0 || titelEng.length == 0 || beschrijvingEng.length == 0 || imgPath.length == 0)) {
+        resultaat = true;
+    }
+
+    return resultaat;
+}
+
+function checkWebAddress(input) {
+    var resultaat = false;
+    if (input.startsWith("http")) {
+        resultaat = true;
+    }
+    return resultaat;
+}
+
+function editAnnotationToFirebaseNl(idNL, categorie, titelNl, beschrijvingNl, imgPath) {
+    var annotationRef = firebase.database().ref("nl/annotations/" + idNL);
+
+    annotationRef.update({
+        categorie: categorie,
+        titel: titelNl,
+        beschrijving: beschrijvingNl,
+        imgPath: imgPath
+    });
+}
+
+function editAnnotationToFirebaseENG(idENG, categorie, titelENG, beschrijvingENG, imgPath) {
+    var annotationRef = firebase.database().ref("eng/annotations/" + idENG);
+
+    annotationRef.update({
+        categorie: categorie,
+        titel: titelENG,
+        beschrijving: beschrijvingENG,
+        imgPath: imgPath
+    });
+}
+
+
+function setFirstRouteMarker(id, lat, lon) {
+    
+    
 }
 

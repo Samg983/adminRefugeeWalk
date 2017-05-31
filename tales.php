@@ -6,13 +6,13 @@ include_once 'check_login.php';
 
     <?php
     require_once './Head.php';
-    $src1= $_POST['source1'];
+    $src1 = $_POST['source1'];
     echo count($src1);
     ?>
 
     <body>
         <?php require_once 'nav.php'; ?>
-      
+
 
 
         <header class="headerPic">
@@ -26,11 +26,23 @@ include_once 'check_login.php';
                 <h4 class="col s12 green-border">Tales</h4>
             </div>
 
-            <div id="tales" class="row">
-                
+            <div class="row">
+                <div class="col s12 ">
+                    <ul class="tabs">
+                        <li class="tab col s3"><a class="active teal-text" href="#talesNl">Nl</a></li>
+                        <li class="tab col s3"><a class="teal-text" href="#talesEng">Eng</a></li>
+
+                    </ul>
+                </div>
+                <div id="talesNl" class="col s12">
+                    <div id="loader" class="progress">
+                        <div class="indeterminate"></div>
+                    </div>
+
+                </div>
+                <div id="talesEng" class="col s12"></div>
+
             </div>
-
-
 
         </main>
 
@@ -49,6 +61,6 @@ include_once 'check_login.php';
             firebase.initializeApp(config);
         </script>
         <script src="./js/tales.js"></script>
-<?php require_once './Footer.php'; ?>
+        <?php require_once './Footer.php'; ?>
     </body>
 </html>

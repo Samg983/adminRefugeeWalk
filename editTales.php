@@ -2,7 +2,7 @@
 include_once 'check_login.php';
 
 $id = $_GET["id"];
-
+$lan = $_GET["lan"];
 ?>
 <!doctype html>
 <html lang="nl">
@@ -25,13 +25,42 @@ $id = $_GET["id"];
 
             <div class="row" style="margin-top:1em">
                 <h4 id="editTaleId" class="col s12 green-border"><?php echo $id; ?></h4>
+                <p id="lan" style="visibility: hidden"><?php echo $lan; ?></p>
             </div>
 
             <div class="row">
+                <div class="col s6">
+                    <div class="col s12">
+                        <img class="imgTale responsive-img" src="">
+                    </div>
+                    <div class="row file-field input-field col s12 ">
 
-                
+                        <div class="btn col s12">
+                            <span>Pas foto aan*</span>
+                            <input id="imgButton" type="file" name="imgAnnotation" >
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input id="file-path" class="file-path validate" type="hidden" name="imgAnnotation2" value="">
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col s6">
+                    <div class="input-field col s12">
+                        <input placeholder="" id="titel" type="text">
+                        <label for="titel">Titel</label>
+                    </div>
+                    <div class="input-field col s12">
+                        <textarea id="textarea" class="materialize-textarea" placeholder=""></textarea>
+                        <label for="textarea">Beschrijving</label>
+                    </div>
+
+
+                    <a id="submit" class="btn waves-effect waves-light full-width addMarkerPopUp_close disabled" type="submit">Submit
+                        <i class="material-icons right">send</i>
+                    </a>
+                </div>
             </div>
-
 
         </main>
         <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>

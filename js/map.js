@@ -1,5 +1,5 @@
 /* Verwijderen van punten op een polyline https://duncan99.wordpress.com/2015/10/16/google-maps-editable-polylines/ */
-
+/* live preview van foto toevoegen aan img src http://jsfiddle.net/LvsYc/ */
 var map;
 var database = firebase.database();
 var storage = firebase.app().storage();
@@ -37,6 +37,8 @@ var icons = {
 $(document).ready(function () {
     route = new google.maps.MVCArray();
 
+    
+    
     $('.tabs').tabs();
 
     initMap();
@@ -46,7 +48,7 @@ $(document).ready(function () {
 
     $(document).keyup(function (e) {
         if (e.keyCode == 27) {
-            console.log("esc");
+
             if (addBoolean) {
                 setAddToNormal();
             }
@@ -114,6 +116,12 @@ $(document).ready(function () {
 
     imgButton.change(function (e) {
         file = e.target.files[0];
+        readURL(this);
+        if (checkFields()) {
+            $("#submit").removeClass("disabled");
+        } else {
+            $("#submit").addClass("disabled");
+        }
     });
 
     $("#submit").click(function (e) {
@@ -143,9 +151,9 @@ $(document).ready(function () {
                     var task = storageRef.put(file).then(function () {
                         storageRef.getDownloadURL().then(function (url) {
                             imgPath = url;
-                            
-                            editAnnotationToFirebaseNl(toEditIdNl, categorie,titelNl, beschrijvingNl, imgPath);
-                            editAnnotationToFirebaseENG(toEditIdENG,categorie, titelEng, beschrijvingEng, imgPath);
+
+                            editAnnotationToFirebaseNl(toEditIdNl, categorie, titelNl, beschrijvingNl, imgPath);
+                            editAnnotationToFirebaseENG(toEditIdENG, categorie, titelEng, beschrijvingEng, imgPath);
                             clearMarkers();
                             markers = [];
                             readAllAnnotationsNl();
@@ -180,6 +188,7 @@ $(document).ready(function () {
         }
 
     });
+    
 });
 
 
@@ -354,8 +363,8 @@ function initMap() {
         }
     ], {name: 'Styled Map'});
     map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 50.977878, lng: 5.628322},
-        zoom: 11,
+        center: {lat: 50.931761, lng: 5.546263},
+        zoom: 13,
         mapTypeControlOptions: {
             mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain',
                 'styled_map']
@@ -433,6 +442,13 @@ function placeMarker(position, categorie, map, idNL, beschrijvingNL, titelNL, id
         markers = [];
         readAllAnnotationsNl();
     });
+    
+    marker.addListener('rightclick',function(){
+        deleteMarkerById(idNL, idENG);
+        clearMarkers();
+        markers = [];
+        readAllAnnotationsNl();
+    });
 }
 
 
@@ -480,8 +496,9 @@ function readAllAnnotationsNl() {
                 var titelNL = allAnnotationsNL[k].titel;
                 var beschrijvingNL = allAnnotationsNL[k].beschrijving;
 
-                //console.log(p);
+                console.log(p);
                 var titelENG = allAnnotationsENG[p].titel;
+                console.log(titelENG);
                 var beschrijvingENG = allAnnotationsENG[p].beschrijving;
 
                 var myLatlng = new google.maps.LatLng(lat, lon);
@@ -500,14 +517,23 @@ function drawRoute() {
         var allPoints = snapshot.val();
         var allPointsKeys = Object.keys(allPoints);
         route.clear();
+        clearRouteMarkers();
+        routeMarkers = [];
         for (var i = 0; i < allPointsKeys.length; i++) {
             var k = allPointsKeys[i];
 
             var lat = allPoints[k].lat;
             var lon = allPoints[k].lon;
 
+            if (i == 0) {
+                setFirstRouteMarker(k, lat, lon)
+            } else if (i == allPointsKeys.length - 1) {
+                setLastRouteMarker(k, lat, lon)
+            } else {
+                placeRouteMarker(k, lat, lon);
+            }
 
-            placeRouteMarker(k, lat, lon);
+
 
             route.push(new google.maps.LatLng(lat, lon));
 
@@ -704,7 +730,97 @@ function editAnnotationToFirebaseENG(idENG, categorie, titelENG, beschrijvingENG
 
 
 function setFirstRouteMarker(id, lat, lon) {
-    
-    
+    var marker = new google.maps.Marker({
+        draggable: true,
+        position: new google.maps.LatLng(lat, lon),
+        map: map,
+        icon: "https://www.samgoeman.com/img/start_flag-8.png",
+        id: id
+    });
+
+
+    marker.addListener('click', function (e) {
+        if (deleteBoolean) {
+            var id = marker.id;
+            var markerRef = firebase.database().ref("route/").child(id);
+            markerRef.remove();
+            clearRouteMarkers();
+            routeMarkers = [];
+            drawRoute();
+        }
+    });
+
+    routeMarkers.push(marker);
+
+    google.maps.event.addListener(marker, 'dragend', function (e) {
+        var routeRef = database.ref("route/" + id);
+
+        routeRef.update({
+            lat: e.latLng.lat(),
+            lon: e.latLng.lng()
+        });
+        clearRouteMarkers();
+        routeMarkers = [];
+        drawRoute();
+
+    });
+
+}
+
+function setLastRouteMarker(id, lat, lon) {
+    var marker = new google.maps.Marker({
+        draggable: true,
+        position: new google.maps.LatLng(lat, lon),
+        map: map,
+        icon: "https://www.samgoeman.com/img/finish_flag-8.png",
+        id: id
+    });
+
+
+    marker.addListener('click', function (e) {
+        if (deleteBoolean) {
+            var id = marker.id;
+            var markerRef = firebase.database().ref("route/").child(id);
+            markerRef.remove();
+            clearRouteMarkers();
+            routeMarkers = [];
+            drawRoute();
+        }
+    });
+
+    routeMarkers.push(marker);
+
+    google.maps.event.addListener(marker, 'dragend', function (e) {
+        var routeRef = database.ref("route/" + id);
+
+        routeRef.update({
+            lat: e.latLng.lat(),
+            lon: e.latLng.lng()
+        });
+        clearRouteMarkers();
+        routeMarkers = [];
+        drawRoute();
+
+    });
+
+}
+
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            $('.imgAnnotation').attr('src', e.target.result);
+        }
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function deleteMarkerById(idNl, idEng) {
+    var annotationRef = firebase.database().ref("nl/annotations/").child(idNl);
+    annotationRef.remove();
+    var annotationRef = firebase.database().ref("eng/annotations/").child(idEng);
+    annotationRef.remove();
 }
 

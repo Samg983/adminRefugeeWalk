@@ -26,8 +26,23 @@ include_once 'check_login.php';
 
             </div>
 
-            <div id="addMarkerPopUp" style="width:30%">
-                <form id="myForm" class="s12" action="map.php" enctype="multipart/form-data">
+            <div id="addMarkerPopUp" class="row animated fadeInDown" style="width:60%">
+                <div class="col s6">
+                    <div class="s12">
+                        <img class="imgAnnotation responsive-img" src="">
+                    </div>
+                    <div class="file-field input-field row ">
+                        <div class="btn col s12">
+                            <span>Foto*</span>
+                            <input id="imgButton" type="file" name="imgAnnotation" >
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input id="file-path" class="file-path validate" type="hidden" name="imgAnnotation2" value="">
+                        </div>
+                    </div>
+                    
+                </div>
+                <form id="myForm" class="col s6" action="map.php" enctype="multipart/form-data">
                     <ul class="tabs center">
                         <li class="tab col s6"><a class="active teal-text" href="#nl">Nederlands</a></li>
                         <li class="tab col s6"><a class="teal-text" href="#eng">Engels</a></li>
@@ -83,34 +98,15 @@ include_once 'check_login.php';
                                 <label for="beschrijving">Description*</label>
                             </div>
                         </div>
-
-
-                        <!--<button id="submit" class="btn waves-effect waves-light full-width" type="submit">Submit
-                             <i class="material-icons right">send</i>
-                         </button>-->
-
-
-
-                    </div>
-                    <div class="file-field input-field row ">
-                        <div class="btn col s12">
-                            <span>Foto*</span>
-                            <input id="imgButton"type="file" name="imgAnnotation" >
-                        </div>
-                        <div class="file-path-wrapper">
-                            <input id="file-path" class="file-path validate" type="text" name="imgAnnotation2" value="">
-                        </div>
-                    </div>
-                    <div class="s12">
-                        <img class="imgAnnotation responsive-img" src="">
                     </div>
 
-                    
+
+
                     <div class="row">
                         <div class="center">
 
                             <a class="btn waves-effect waves-light s6 red addMarkerPopUp_close" >Cancel
-                                <i class="material-icons left">delete</i>
+                                <i class="material-icons right">cancel</i>
                             </a>
                             <a id="submit" class="btn waves-effect waves-light s6 addMarkerPopUp_close disabled" type="submit">Submit
                                 <i class="material-icons right">send</i>

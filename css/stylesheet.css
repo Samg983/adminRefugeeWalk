@@ -192,7 +192,14 @@ ul.dropdown-content.select-dropdown li span {
     background-color: white;
 }
 
+.tales_text{
+    margin-top: 5.5% !important;
+    line-height: 1.3em;
+} 
 
+.card-title {
+    background-color: rgba(255,255,255,0.5);
+}
 
 @media only screen and (max-width: 992px) {
     header,

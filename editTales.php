@@ -51,7 +51,7 @@ $lan = $_GET["lan"];
                         <label for="titel">Titel</label>
                     </div>
                     <div class="input-field col s12">
-                        <textarea id="textarea" class="materialize-textarea" placeholder=""></textarea>
+                        <textarea id="textarea" class="materialize-textarea" placeholder="" data-length="1000"></textarea>
                         <label for="textarea">Beschrijving</label>
                     </div>
 

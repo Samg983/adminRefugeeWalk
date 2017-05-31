@@ -22,6 +22,9 @@ var markers = [];
 
 var toEditId, toEditIdENG;
 
+var polylineLength = 0;
+
+
 var icons = {
     tales: {
         icon: iconBase + 'tales.png'
@@ -37,8 +40,8 @@ var icons = {
 $(document).ready(function () {
     route = new google.maps.MVCArray();
 
-    
-    
+
+
     $('.tabs').tabs();
 
     initMap();
@@ -188,7 +191,7 @@ $(document).ready(function () {
         }
 
     });
-    
+
 });
 
 
@@ -442,8 +445,8 @@ function placeMarker(position, categorie, map, idNL, beschrijvingNL, titelNL, id
         markers = [];
         readAllAnnotationsNl();
     });
-    
-    marker.addListener('rightclick',function(){
+
+    marker.addListener('rightclick', function () {
         deleteMarkerById(idNL, idENG);
         clearMarkers();
         markers = [];
@@ -533,12 +536,16 @@ function drawRoute() {
                 placeRouteMarker(k, lat, lon);
             }
 
+           
+
 
 
             route.push(new google.maps.LatLng(lat, lon));
-
+            
+            
         }
 
+        
         var path = new google.maps.Polyline({
             path: route,
             geodesic: true,
@@ -548,7 +555,13 @@ function drawRoute() {
             strokeWeight: 2,
             map: map
         });
+        
+        $("#length p").html("Afstand van de wandeling: " + (calcDistance(path.getPath()) / 1000).toFixed(2)+ " km");
     });
+}
+
+function calcDistance(kaka) {
+  return google.maps.geometry.spherical.computeLength(kaka);
 }
 
 function sendPointsToFirebase(e) {

@@ -10,6 +10,8 @@ $(document).ready(function () {
     
     id = $("#editTaleId").html();
     lan = $("#lan").html();
+    
+    $("#textarea").characterCounter();
 
     getTaleById(id, lan);
 
@@ -61,6 +63,7 @@ $(document).ready(function () {
                     });
                 });
             }
+            
         }
     });
 
@@ -86,6 +89,8 @@ function editTale(id, titel, tekst, imgPath, lan) {
         titel: titel,
         tekst: tekst,
         imgPath: imgPath
+    }).then(function(){
+        window.location = "tales.php";
     });
 }
 

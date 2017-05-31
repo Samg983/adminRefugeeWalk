@@ -25,22 +25,26 @@ include_once 'check_login.php';
 
 
             </div>
+            <div id="length">
+                <p></p>
+            </div>
 
             <div id="addMarkerPopUp" class="row animated fadeInDown" style="width:60%">
                 <div class="col s6">
+
                     <div class="s12">
                         <img class="imgAnnotation responsive-img" src="">
                     </div>
                     <div class="file-field input-field row ">
-                        <div class="btn col s12">
-                            <span>Foto*</span>
+                        <div class="btn col s3 push-s5">
+                            <i class="material-icons">add_a_photo</i>
                             <input id="imgButton" type="file" name="imgAnnotation" >
                         </div>
                         <div class="file-path-wrapper">
                             <input id="file-path" class="file-path validate" type="hidden" name="imgAnnotation2" value="">
                         </div>
                     </div>
-                    
+
                 </div>
                 <form id="myForm" class="col s6" action="map.php" enctype="multipart/form-data">
                     <ul class="tabs center">
@@ -105,12 +109,13 @@ include_once 'check_login.php';
                     <div class="row">
                         <div class="center">
 
-                            <a class="btn waves-effect waves-light s6 red addMarkerPopUp_close" >Cancel
-                                <i class="material-icons right">cancel</i>
+                            <a class="btn waves-effect waves-light s6 red addMarkerPopUp_close" >
+                                <i class="material-icons">cancel</i>
                             </a>
-                            <a id="submit" class="btn waves-effect waves-light s6 addMarkerPopUp_close disabled" type="submit">Submit
-                                <i class="material-icons right">send</i>
+                            <a id="submit" class="btn waves-effect waves-light s6 addMarkerPopUp_close disabled" type="submit" style="margin-left: 5%;">
+                                <i class="material-icons">send</i>
                             </a>
+                            <p class="mini">Vul de Nederlandse en Engelstalige velden in.</p>
                         </div>
                     </div>
                 </form>
@@ -123,7 +128,7 @@ include_once 'check_login.php';
         </main>
         <?php require_once './Footer.php'; ?>
         <script async defer
-                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDx-gTNGSJy30dmkvQvAjj3iS6y9vs8j7g&callback=initMap">
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDx-gTNGSJy30dmkvQvAjj3iS6y9vs8j7g&libraries=geometry&callback=initMap">
         </script>
         <script src="https://cdn.rawgit.com/vast-engineering/jquery-popup-overlay/1.7.13/jquery.popupoverlay.js"></script>
         <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
@@ -139,6 +144,7 @@ include_once 'check_login.php';
                     };
                     firebase.initializeApp(config);
         </script>
+        
         <script
             src="js/map.js">
         </script>

@@ -55,15 +55,12 @@ function readAllTalesEng() {
             var titleTale = allTales[k].titel;
             var tekstTale = allTales[k].tekst;
             var src = allTales[k].imgPath;
-            
-            row.innerHTML = "";
+     
             row.innerHTML += "<div class='col s12 m4'><div class='card'><div class='card-image'><img src='"+ src +"'><span class='card-title black-text'>" 
             + titleTale + "</span><a class='btn-floating halfway-fab waves-effect waves-light teal' href='editTales.php?id=" + k + "&lan=eng'><i class='material-icons'>edit</i></a></div><div class='card-content'><p class='tales_text'>" +
             tekstTale + "</p></div></div></div>";
         }
-       
-       
-        
+    
     });
 
 }

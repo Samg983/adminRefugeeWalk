@@ -21,28 +21,38 @@ include_once 'check_login.php';
 
 
             <div class="row" style="margin-top:1em">
-                <h4 class="col s12 green-border">Admin</h4>
+                <h4 class="col s12 green-border">Dashboard</h4>
             </div>
 
             <div class="row">
 
                 <div class="col s12 m4">
-                    <div class="card hoverable">
-                        <div class="card-image waves-effect waves-block waves-light">
-                            <img class="activator fixed-height" src="">
+                    <div class="card">
+                        <div class="card-image">
+                            <img src="img/tales-dashboard.png">
+                            
                         </div>
                         <div class="card-content">
-                            <span class="card-title activator grey-text text-darken-4"><i class="material-icons right">more_vert</i></span>
-                            <p><a href="product_detail.php?productId=?>">See more</a></p>
+                             <h5>Edit tales</h5>
+                            <p>Edit Arzoo, Lien &amp; Rami their tales.</p>
                         </div>
-                        <div class="card-reveal">
-                            <span class="card-title grey-text text-darken-4">
-
-                                <i class="material-icons right">close</i></span>
-                            <p>
-
-                            </p>
-                            <p><a href="product_detail.php?productId=">See more</a></p>
+                        <div class="card-action center">
+                            <a href="tales.php" class="white-text waves-effect waves-light btn">Go<i class="material-icons left">send</i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col s12 m4">
+                    <div class="card">
+                        <div class="card-image">
+                            <img src="img/map-dashboard.png">
+                            
+                        </div>
+                        <div class="card-content">
+                            <h5>Map</h5>
+                            <p>Edit the walk, set recreation points.</p>
+                        </div>
+                        <div class="card-action center">
+                            <a href="map.php" class="white-text waves-effect waves-light btn">Go<i class="material-icons left">send</i></a>
                         </div>
                     </div>
                 </div>

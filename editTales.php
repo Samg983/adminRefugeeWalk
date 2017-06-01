@@ -34,11 +34,12 @@ $lan = $_GET["lan"];
                         <img class="imgTale responsive-img" src="">
                     </div>
                     <div class="row file-field input-field col s12 ">
-
+                        <p>Foto max 1mb</p>
                         <div class="btn col s12">
                             <span>Pas foto aan*</span>
                             <input id="imgButton" type="file" name="imgAnnotation" >
                         </div>
+                        
                         <div class="file-path-wrapper">
                             <input id="file-path" class="file-path validate" type="hidden" name="imgAnnotation2" value="">
                         </div>

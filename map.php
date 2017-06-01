@@ -36,13 +36,16 @@ include_once 'check_login.php';
                         <img class="imgAnnotation responsive-img" src="">
                     </div>
                     <div class="file-field input-field row ">
+                        
                         <div class="btn col s3 push-s5">
+                           
                             <i class="material-icons">add_a_photo</i>
                             <input id="imgButton" type="file" name="imgAnnotation" >
                         </div>
                         <div class="file-path-wrapper">
                             <input id="file-path" class="file-path validate" type="hidden" name="imgAnnotation2" value="">
                         </div>
+                        
                     </div>
 
                 </div>
@@ -116,6 +119,7 @@ include_once 'check_login.php';
                                 <i class="material-icons">send</i>
                             </a>
                             <p class="mini">Vul de Nederlandse en Engelstalige velden in.</p>
+                            <p class="mini">Foto max 1mb, anders wordt hij niet ingeladen in de app.</p>
                         </div>
                     </div>
                 </form>
